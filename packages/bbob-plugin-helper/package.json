@@ -23,7 +23,7 @@
     "url": "git://github.com/JiLiZART/bbob.git"
   },
   "scripts": {
-    "build:commonjs": "../../scripts/pkg-task build-commonjs",
+    "build:commonjs": "../../scripts/pkg-task build-ts-commonjs",
     "build:es": "../../scripts/pkg-task build-es",
     "build:umd": "../../scripts/pkg-task build-umd",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd",

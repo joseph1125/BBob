@@ -1,9 +1,15 @@
-import { OPEN_BRAKET, CLOSE_BRAKET, SLASH } from './char';
+import { OPEN_BRAKET, CLOSE_BRAKET, SLASH } from "./char";
 import {
-  getNodeLength, appendToNode, attrsToString, attrValue, getUniqAttr,
-} from './helpers';
+  getNodeLength,
+  appendToNode,
+  attrsToString,
+  attrValue,
+  getUniqAttr,
+} from "./helpers";
 
-const getTagAttrs = (tag, params) => {
+type Attributes = Record<string, any>;
+
+const getTagAttrs = (tag: string, params: Attributes) => {
   const uniqAattr = getUniqAttr(params);
 
   if (uniqAattr) {
@@ -21,21 +27,29 @@ const getTagAttrs = (tag, params) => {
 };
 
 class TagNode {
-  constructor(tag, attrs, content) {
+  public tag: string;
+  public attrs: Attributes;
+  public content: (TagNode | string)[];
+
+  constructor(
+    tag: string,
+    attrs: Attributes,
+    content: TagNode | string | (TagNode | string)[]
+  ) {
     this.tag = tag;
     this.attrs = attrs;
     this.content = Array.isArray(content) ? content : [content];
   }
 
-  attr(name, value) {
-    if (typeof value !== 'undefined') {
+  attr(name: string, value?: string) {
+    if (typeof value !== "undefined") {
       this.attrs[name] = value;
     }
 
     return this.attrs[name];
   }
 
-  append(value) {
+  append(value: string) {
     return appendToNode(this, value);
   }
 
@@ -57,9 +71,12 @@ class TagNode {
     return new TagNode(this.tag.toLowerCase(), this.attrs, this.content);
   }
 
-  toString({ openTag = OPEN_BRAKET, closeTag = CLOSE_BRAKET } = {}) {
+  toString({ openTag = OPEN_BRAKET, closeTag = CLOSE_BRAKET } = {}): string {
     const isEmpty = this.content.length === 0;
-    const content = this.content.reduce((r, node) => r + node.toString({ openTag, closeTag }), '');
+    const content = this.content.reduce(
+      (r, node) => r + node.toString({ openTag, closeTag }),
+      ""
+    );
     const tagStart = this.toTagStart({ openTag, closeTag });
 
     if (isEmpty) {
@@ -68,10 +85,15 @@ class TagNode {
 
     return `${tagStart}${content}${this.toTagEnd({ openTag, closeTag })}`;
   }
-}
 
-TagNode.create = (tag, attrs = {}, content = []) => new TagNode(tag, attrs, content);
-TagNode.isOf = (node, type) => (node.tag === type);
+  static create = (
+    tag: string,
+    attrs: Record<string, string | number> = {},
+    content: TagNode | string | (TagNode | string)[] = []
+  ) => new TagNode(tag, attrs, content);
+
+  static isOf = (node: TagNode, type: string) => node.tag === type;
+}
 
 export { TagNode };
 export default TagNode;
